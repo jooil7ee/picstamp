@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/picstamp.iml" filepath="$PROJECT_DIR$/.idea/picstamp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pixrenamer.iml" filepath="$PROJECT_DIR$/.idea/pixrenamer.iml" />
     </modules>
   </component>
 </project>

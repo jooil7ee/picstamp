@@ -4,7 +4,7 @@ import yaml
 import os.path
 import argparse
 import logging.config
-from picstamp.picstamper import PicStamper
+from pixrenamer.pixrenamer import PicStamper
 
 
 # ===========================================================
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(level=logging.INFO)
 
-    logger = logging.getLogger("picstamp")
-    logger.info("<< Start PicStamper >>")
+    logger = logging.getLogger("pixrenamer")
+    logger.info("<< Start Pixrenamer >>")
 
     # Run picstamping job
-    stamper = PicStamper(args.arg_tag)
-    stamper.set_options(uppercase=args.arg_uppercase)
-    stamper.process(args.pos_in_dir)
+    renamer = PicStamper(args.arg_tag)
+    renamer.set_options(uppercase=args.arg_uppercase)
+    renamer.process(args.pos_in_dir)
 
     sys.exit(0)

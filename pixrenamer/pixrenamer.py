@@ -4,14 +4,14 @@ import glob
 import os.path
 import logging
 from enum import Enum
-from picstamp.stamp import Stamp, STAMP_TYPE
-from sturgeon.renamehistory import RenameHistory
+from pixrenamer.pixstamp import Stamp, STAMP_TYPE
+from pixrenamer.nameinspector import NameInspector
 
 
 #===========================================================
 # GLOBAL VARIABLES
 #===========================================================
-logger = logging.getLogger("picstamp")
+logger = logging.getLogger("pixrenamer")
 
 
 #===========================================================
@@ -31,7 +31,7 @@ NAME_PATTERNS = (
 #===========================================================
 # CLASS IMPLEMENTATIONS
 #===========================================================
-class PicStamper:
+class PixRenamer:
     '''
     Timestamp-based media file renamer
     '''
@@ -70,7 +70,7 @@ class PicStamper:
 
             # inspect the file name
             dir_name, file_name = x.rsplit("/")
-            style, info = self.__inspect(file_name)
+            style, info = NameInspector.inspect(file_name)
 
             if "default" == style:
                 stamp.set(*info)
@@ -85,15 +85,3 @@ class PicStamper:
             seq = history.add(new_file_name, file_name)
             print(f"+ {new_file_name}  <= {file_name}")
 
-    def __inspect(self, file_name):
-        '''
-        Do pattern matching and extract timestamp information
-        '''
-        n = file_name.replace("-", "_")
-
-        for x, p in NAME_PATTERNS:
-            is_matched = p.match(n)
-            if is_matched:
-                return (x, is_matched.groups())
-
-        return ("unknown",())
