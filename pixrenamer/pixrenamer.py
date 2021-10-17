@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import re
 import glob
-import os.path
 import logging
-from enum import Enum
-from pixrenamer.pixstamp import Stamp, STAMP_TYPE
-from pixrenamer.nameinspector import NameInspector
+import os.path
+import re
 
+from pixrenamer.pixstamp import PixStamp, TS_INFO_STYLE
 
 #===========================================================
 # GLOBAL VARIABLES
@@ -19,12 +17,11 @@ logger = logging.getLogger("pixrenamer")
 #===========================================================
 # Name patterns expressed as regular expressions
 NAME_PATTERNS = (
-    # standard timestamp-based file name
-    ("default", re.compile("(\d{8})_(\d{6})\w*\.(\w+)", re.IGNORECASE)),
+    # standard date-and-time based file name (with microseconds)
+    (re.compile("[A-Za-z_]*(\d{8})_?(\d{6})(\d{0,6})\w*\.(\w+)", re.IGNORECASE), TS_INFO_STYLE.STANDARD),
+
     # UNIX epoch seconds
-    ("seconds", re.compile("(\d{10})\w*\.(\w+)", re.IGNORECASE)),
-    # Kakao Talk
-    ("default", re.compile("kakaotalk_(\d{8})_(\d{6})\w*\.(\w+)", re.IGNORECASE)),
+    (re.compile("(\d{10})\w*\.(\w+)", re.IGNORECASE), TS_INFO_STYLE.EPOCH_SECS),
 )
 
 
@@ -32,15 +29,17 @@ NAME_PATTERNS = (
 # CLASS IMPLEMENTATIONS
 #===========================================================
 class PixRenamer:
-    '''
+    """
     Timestamp-based media file renamer
-    '''
-    def __init__(self, tag):
-        '''
+    """
+    def __init__(self, tag, batch_size=100):
+        """
         Initialization
-        '''
+        """
         self.tag = tag
         self.options = {'uppercase': False}
+        self.batch_queue = []
+        self.batch_size = batch_size
 
     def set_options(self, **kwargs):
         """
@@ -49,19 +48,16 @@ class PixRenamer:
         for (k, v) in kwargs.items():
             self.options[k] = v
 
-    def process(self, in_dir):
-        '''
-        Rename files in a given directory
-        '''
+    def run(self, in_dir):
+        """
+        Rename media files in a given directory.
+        """
         if not os.path.exists(in_dir):
             logger.error(f"Input directory does not exist: {in_dir}")
             return
 
-        history = RenameHistory()
-        stamp = Stamp(
-            self.tag if not self.options['uppercase'] else self.tag.upper())
-
-        # Processing media files one by one
+        # history = RenameHistory()
+        # Scan and process media files one by one
         logger.info(f"Processing files in {in_dir}")
         for x in glob.glob(os.path.join(in_dir, "*")):
             if os.path.isdir(x):
@@ -69,19 +65,43 @@ class PixRenamer:
                 continue
 
             # inspect the file name
-            dir_name, file_name = x.rsplit("/")
-            style, info = NameInspector.inspect(file_name)
+            *dir_name, file_name = x.rsplit("/")
+            stamp = self.__inspect(file_name)
 
-            if "default" == style:
-                stamp.set(*info)
-            elif "seconds" == style:
-                stamp.set_from_seconds(*info)
-            else:
-                print(f"- {file_name} - failed")
+            if not stamp:
                 continue
 
-            new_file_name = stamp.get()
+            # Add to job queue
+            self.batch_queue.append(stamp)
+            if self.batch_size <= len(self.batch_queue):
+                self.__do_batch()
+            ##seq = history.add(new_file_name, file_name)
+            ##print(f"+ {new_file_name}  <= {file_name}")
 
-            seq = history.add(new_file_name, file_name)
-            print(f"+ {new_file_name}  <= {file_name}")
+        if 0 < len(self.batch_queue):
+            self.__do_batch()
 
+    def __inspect(self, file_name):
+        """
+        Do pattern matching and extract timestamp information.
+        """
+        n = file_name.replace("-", "_")
+
+        for p, x in NAME_PATTERNS:
+            is_matched = p.match(n)
+            if is_matched:
+                logger.debug(f"{file_name}  --> {x}")
+                return PixStamp.new(self.tag, x, is_matched.groups())
+
+        logger.error(f"{file_name}  --> {TS_INFO_STYLE.UNKNOWN}")
+
+        return None
+
+    def __do_batch(self):
+        """
+        Process jobs in the queue all at once.
+        """
+        logger.debug("Do batch jobs")
+        while 0 < len(self.batch_queue):
+            job = self.batch_queue.pop(0)
+            print(job.format())

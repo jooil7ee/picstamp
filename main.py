@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-import sys
-import yaml
-import os.path
 import argparse
 import logging.config
-from pixrenamer.pixrenamer import PicStamper
+import os.path
+import sys
 
+import yaml
+
+from pixrenamer.pixrenamer import PixRenamer
 
 # ===========================================================
 #  SYMBOLIC CONSTANTS
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
             help = "use uppercase names")
-    parser.add_argument('pos_in_dir', metavar="INPUT_DIR", nargs="?",
+    parser.add_argument('-i', '--in_dir', metavar="INPUT_DIR", nargs="?",
             default="in",
             help="directory path which contains image and video files.")
 
@@ -56,8 +57,8 @@ if __name__ == "__main__":
     logger.info("<< Start Pixrenamer >>")
 
     # Run picstamping job
-    renamer = PicStamper(args.arg_tag)
+    renamer = PixRenamer(args.arg_tag)
     renamer.set_options(uppercase=args.arg_uppercase)
-    renamer.process(args.pos_in_dir)
+    renamer.run(args.in_dir)
 
     sys.exit(0)
