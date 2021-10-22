@@ -53,7 +53,7 @@ class PixStamp:
 
         if STAMP_STYLE.STANDARD == style:
             msec_s = self.ts.strftime("%f")[:3]
-            formatted_stamp = "%s_%s.%s%03d%s" % (self.tag,
+            formatted_stamp = "%s_%s_%s%03d%s" % (self.tag,
                                                   self.ts.strftime("%Y%m%d_%H%M%S"),
                                                   msec_s,
                                                   self.seq,

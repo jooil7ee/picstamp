@@ -5,39 +5,43 @@ import os.path
 import re
 
 from pixrenamer.pixstamp import PixStamp, TS_INFO_STYLE
+from pixrenamer.renamingwork import RenamingWork
 
-#===========================================================
+
+# ===========================================================
 # GLOBAL VARIABLES
-#===========================================================
+# ===========================================================
 logger = logging.getLogger("pixrenamer")
 
 
-#===========================================================
+# ===========================================================
 # SYMBOLIC CONSTANTS
-#===========================================================
+# ===========================================================
 # Name patterns expressed as regular expressions
 NAME_PATTERNS = (
     # standard date-and-time based file name (with microseconds)
-    (re.compile("[A-Za-z_]*(\d{8})_?(\d{6})(\d{0,6})\w*\.(\w+)", re.IGNORECASE), TS_INFO_STYLE.STANDARD),
+    (re.compile("[A-Za-z_]*(\d{8})_?(\d{6})(\d{0,6})\w*\.(\w+)", re.IGNORECASE),
+     TS_INFO_STYLE.STANDARD),
 
     # UNIX epoch seconds
     (re.compile("(\d{10})\w*\.(\w+)", re.IGNORECASE), TS_INFO_STYLE.EPOCH_SECS),
 )
 
 
-#===========================================================
+# ===========================================================
 # CLASS IMPLEMENTATIONS
-#===========================================================
+# ===========================================================
 class PixRenamer:
     """
     Timestamp-based media file renamer
     """
+
     def __init__(self, tag, batch_size=100):
         """
         Initialization
         """
         self.tag = tag
-        self.options = {'uppercase': False}
+        self.options = {'uppercase': False, 'apply': False}
         self.batch_queue = []
         self.batch_size = batch_size
 
@@ -71,8 +75,10 @@ class PixRenamer:
             if not stamp:
                 continue
 
-            # Add to job queue
-            self.batch_queue.append(stamp)
+            # create a renaming work and add it to batch queue
+            renaming = RenamingWork(x, stamp.format(uppercase=self.options['uppercase']))
+
+            self.batch_queue.append(renaming)
             if self.batch_size <= len(self.batch_queue):
                 self.__do_batch()
             ##seq = history.add(new_file_name, file_name)
@@ -101,7 +107,8 @@ class PixRenamer:
         """
         Process jobs in the queue all at once.
         """
-        logger.debug("Do batch jobs")
+        logger.debug("Process batch queue:")
+
         while 0 < len(self.batch_queue):
-            job = self.batch_queue.pop(0)
-            print(job.format())
+            work = self.batch_queue.pop(0)
+            work.execute(apply=self.options['apply'])

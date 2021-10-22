@@ -38,7 +38,10 @@ if __name__ == "__main__":
             help="tag for type of input files")
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
-            help = "use uppercase names")
+            help="use uppercase names")
+    parser.add_argument('-a', '--apply', required=False,
+            dest="arg_apply", default=False, action="store_true",
+            help="apply changes or just show plan")
     parser.add_argument('-i', '--in_dir', metavar="INPUT_DIR", nargs="?",
             default="in",
             help="directory path which contains image and video files.")
@@ -58,7 +61,7 @@ if __name__ == "__main__":
 
     # Run picstamping job
     renamer = PixRenamer(args.arg_tag)
-    renamer.set_options(uppercase=args.arg_uppercase)
+    renamer.set_options(uppercase=args.arg_uppercase, apply=args.arg_apply)
     renamer.run(args.in_dir)
 
     sys.exit(0)
