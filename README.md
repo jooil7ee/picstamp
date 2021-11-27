@@ -1,3 +1,3 @@
-# pixrenamer
+# pixorder
 
-Rename photo and video files by using timestamp information
+Take timestamp information from media (image and video) files, and rename them by using timestamp information
