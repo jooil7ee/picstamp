@@ -6,7 +6,7 @@ import sys
 
 import yaml
 
-from pixrenamer.pixrenamer import PixRenamer
+from pixsort.pixsort import PixSorter
 
 # ===========================================================
 #  SYMBOLIC CONSTANTS
@@ -60,8 +60,8 @@ if __name__ == "__main__":
     logger.info("<< Start Pixrenamer >>")
 
     # Run picstamping job
-    renamer = PixRenamer(args.arg_tag)
-    renamer.set_options(uppercase=args.arg_uppercase, apply=args.arg_apply)
-    renamer.run(args.in_dir)
+    sorter = PixSorter(args.arg_tag)
+    sorter.set_options(uppercase=args.arg_uppercase, apply=args.arg_apply)
+    sorter.run(args.in_dir)
 
     sys.exit(0)

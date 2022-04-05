@@ -4,14 +4,14 @@ import logging
 import os.path
 import re
 
-from pixrenamer.pixstamp import PixStamp, TS_INFO_STYLE
-from pixrenamer.renamingwork import RenamingWork
+from pixsort.pixstamp import PixStamp, TS_INFO_STYLE
+from pixsort.renamingwork import RenamingWork
 
 
 # ===========================================================
 # GLOBAL VARIABLES
 # ===========================================================
-logger = logging.getLogger("pixrenamer")
+logger = logging.getLogger("pixsort")
 
 
 # ===========================================================
@@ -31,7 +31,7 @@ NAME_PATTERNS = (
 # ===========================================================
 # CLASS IMPLEMENTATIONS
 # ===========================================================
-class PixRenamer:
+class PixSorter:
     """
     Timestamp-based media file renamer
     """
