@@ -1,4 +1,7 @@
 # Project exclude paths
 /venv/
 /log/
+__pycache__/
+
 #/resources/in/
+*.pyc

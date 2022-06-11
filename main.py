@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
 import logging.config
@@ -32,19 +33,18 @@ if __name__ == "__main__":
     # Parse command-line
     parser = argparse.ArgumentParser(
             prog="python3 main.py",
-            description='Rename media files using timestamp information')
-    parser.add_argument('-t', '--tag', required=True,
-            dest="arg_tag", choices=TAGS, default=None,
-            help="tag for type of input files")
+            description="Rename media files using timestamp information for sorting them")
+    parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
+            help="directory path which contains media files.")
+    parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?",
+            default="done",
+            help="directory path which contains image and video files.")
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
-            help="use uppercase names")
+            help="use uppercase name")
     parser.add_argument('-a', '--apply', required=False,
             dest="arg_apply", default=False, action="store_true",
             help="apply changes or just show plan")
-    parser.add_argument('-i', '--in_dir', metavar="INPUT_DIR", nargs="?",
-            default="in",
-            help="directory path which contains image and video files.")
 
     args = parser.parse_args()
 
