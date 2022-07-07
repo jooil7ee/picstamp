@@ -9,6 +9,7 @@ import yaml
 
 from pixsort.pixsort import PixSorter
 
+
 # ===========================================================
 #  SYMBOLIC CONSTANTS
 # ===========================================================
@@ -30,15 +31,16 @@ logger = None
 #  MAIN FUNCTION
 # ===========================================================
 if __name__ == "__main__":
+
     # Parse command-line
     parser = argparse.ArgumentParser(
             prog="python3 main.py",
             description="Rename media files using timestamp information for sorting them")
+
     parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
             help="directory path which contains media files.")
-    parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?",
-            default="done",
-            help="directory path which contains image and video files.")
+    parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
+            help="directory path for saving renamed media files.")
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
             help="use uppercase name")
@@ -56,11 +58,11 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(level=logging.INFO)
 
-    logger = logging.getLogger("pixrenamer")
-    logger.info("<< Start Pixrenamer >>")
+    logger = logging.getLogger("pixsort")
+    logger.info("<< Start Pixsort >>")
 
-    # Run picstamping job
-    sorter = PixSorter(args.arg_tag)
+    # Run pixsort job
+    sorter = PixSorter()
     sorter.set_options(uppercase=args.arg_uppercase, apply=args.arg_apply)
     sorter.run(args.in_dir)
 

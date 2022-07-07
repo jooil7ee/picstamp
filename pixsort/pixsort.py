@@ -33,14 +33,13 @@ NAME_PATTERNS = (
 # ===========================================================
 class PixSorter:
     """
-    Timestamp-based media file renamer
+    Timestamp-based media file sorter
     """
 
-    def __init__(self, tag, batch_size=100):
+    def __init__(self, batch_size=100):
         """
         Initialization
         """
-        self.tag = tag
         self.options = {'uppercase': False, 'apply': False}
         self.batch_queue = []
         self.batch_size = batch_size
