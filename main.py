@@ -50,6 +50,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    print(args)
+
     # Set logger
     if os.path.exists("resources/logging.conf"):
         with open("resources/logging.conf", "r") as f:
