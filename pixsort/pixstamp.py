@@ -7,7 +7,7 @@ from enum import Enum
 #===========================================================
 # GLOBAL VARIABLES
 #===========================================================
-logger = logging.getLogger("pixrenamer")
+logger = logging.getLogger("pixsort")
 
 
 # ===========================================================
@@ -28,6 +28,34 @@ class STAMP_STYLE(Enum):
     STANDARD = 1        # date and time: <YYYYMMDD_HHMMSS>.<MSEC>_<SEQ>.<EXT>
     EPOCH_SECS = 2      # epoch seconds: <SECONDS>.<MSEC>_<SEQ>.<EXT>
 
+class PIX_TYPE(Enum):
+    """
+    Media file types
+    """
+    UNKNOWN = 0
+    IMAGE = 1
+    VIDEO = 2
+
+    @staticmethod
+    def map(ext) -> Enum:
+        if ext in ['png', 'jpg', 'jpeg', 'gif']:
+            return PIX_TYPE.IMAGE
+
+        elif ext in ['mp4', 'mov']:
+            return PIX_TYPE.VIDEO
+
+        return PIX_TYPE.UNKNOWN
+
+    @staticmethod
+    def str(pix_type) -> str:
+        if PIX_TYPE.IMAGE == pix_type:
+            return "img"
+
+        elif PIX_TYPE.VIDEO == pix_type:
+            return "mov"
+
+        return "unknown"
+
 
 # ===========================================================
 # CLASS IMPLEMENTATIONS
@@ -36,11 +64,10 @@ class PixStamp:
     """
     Timestamp information of a media file
     """
-    def __init__(self, tag):
+    def __init__(self):
         """
         Initialization
         """
-        self.tag = tag
         self.ts = datetime.fromtimestamp(0)
         self.seq = 0
         self.ext = ""
@@ -50,10 +77,11 @@ class PixStamp:
         construct a pixstamp in a given style
         """
         formatted_stamp = ""
+        tag_s = PIX_TYPE.str(PIX_TYPE.map(self.ext))
 
         if STAMP_STYLE.STANDARD == style:
             msec_s = self.ts.strftime("%f")[:3]
-            formatted_stamp = "%s_%s_%s%03d%s" % (self.tag,
+            formatted_stamp = "%s_%s_%s%03d.%s" % (tag_s,
                                                   self.ts.strftime("%Y%m%d_%H%M%S"),
                                                   msec_s,
                                                   self.seq,
@@ -62,23 +90,23 @@ class PixStamp:
         return formatted_stamp if not uppercase else formatted_stamp.upper()
 
     @staticmethod
-    def new(tag, ts_info_style, info) -> object:
+    def new(tsi_style, info) -> object:
         """
         Make a new pixstamp with a given information
         """
         try:
-            stamp = PixStamp(tag)
+            stamp = PixStamp()
 
-            if TS_INFO_STYLE.STANDARD == ts_info_style:
+            if TS_INFO_STYLE.STANDARD == tsi_style:
                 date_s, time_s, usec_s, ext = info
                 usec_s = (usec_s + "000000")[:6]
                 stamp.ts = datetime.strptime(f"{date_s}_{time_s}.{usec_s}", "%Y%m%d_%H%M%S.%f")
-                stamp.ext = f".{ext}"
+                stamp.ext = f"{ext}".lower()
 
-            elif TS_INFO_STYLE.EPOCH_SECS == ts_info_style:
+            elif TS_INFO_STYLE.EPOCH_SECS == tsi_style:
                 secs_s, ext = info
                 stamp.ts = datetime.fromtimestamp(int(secs_s))
-                stamp.ext = f".{ext}"
+                stamp.ext = f"{ext}".lower()
 
         except ValueError:
             logger.error(f"Wrong timestamp information: {info}")

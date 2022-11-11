@@ -20,6 +20,7 @@ TAGS = (
     "msr",  # Low or medium quality video file
 )
 
+ENV = "dev" # run environment (prd or dev)
 
 # ===========================================================
 #  GLOBAL VARIABLES
@@ -38,9 +39,9 @@ if __name__ == "__main__":
             description="Rename media files using timestamp information for sorting them")
 
     parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
-            help="directory path which contains media files.")
+            dest="arg_in_dir", help="directory path which contains media files.")
     parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
-            help="directory path for saving renamed media files.")
+            dest="arg_out_dir", help="directory path for saving renamed media files.")
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
             help="use uppercase name")
@@ -60,12 +61,12 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(level=logging.INFO)
 
-    logger = logging.getLogger("pixsort")
+    logger = logging.getLogger(ENV)
     logger.info("<< Start Pixsort >>")
 
     # Run pixsort job
     sorter = PixSorter()
-    sorter.set_options(uppercase=args.arg_uppercase, apply=args.arg_apply)
-    sorter.run(args.in_dir)
+    sorter.set_options(out_dir=args.arg_out_dir, uppercase=args.arg_uppercase, apply=args.arg_apply)
+    sorter.run(args.arg_in_dir)
 
     sys.exit(0)
