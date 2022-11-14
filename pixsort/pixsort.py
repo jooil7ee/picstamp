@@ -4,6 +4,7 @@ import logging
 import os.path
 import re
 
+from pixsort.common import *
 from pixsort.pixstamp import PixStamp, TS_INFO_STYLE, STAMP_STYLE
 from pixsort.renamingwork import RenamingWork
 
@@ -11,7 +12,7 @@ from pixsort.renamingwork import RenamingWork
 # ===========================================================
 # GLOBAL VARIABLES
 # ===========================================================
-logger = logging.getLogger("pixsort")
+logger = logging.getLogger(ENV)
 
 
 # ===========================================================
@@ -69,12 +70,15 @@ class PixSorter:
         # Scan and process media files one by one
         logger.info(f"Processing files in {in_dir}")
         media_files = glob.glob(os.path.join(in_dir, "*"))
-        print(media_files)
         media_files.sort()
+
         for x in media_files:
             if os.path.isdir(x):
                 logger.debug(f"- skipping a directory: {x}")
                 continue
+
+            # test for exif
+
 
             # inspect the file name
             *dir_name, file_name = x.rsplit("/")
@@ -107,6 +111,7 @@ class PixSorter:
             if is_matched:
                 logger.debug(f"{file_name}  --> {x}")
                 return PixStamp.new(x, is_matched.groups())
+
 
         logger.error(f"{file_name}  --> {TS_INFO_STYLE.UNKNOWN}")
 

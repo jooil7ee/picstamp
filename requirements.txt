@@ -1,0 +1,3 @@
+pip
+exifread
+PyYAML

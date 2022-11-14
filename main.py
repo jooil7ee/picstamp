@@ -4,9 +4,9 @@ import argparse
 import logging.config
 import os.path
 import sys
-
 import yaml
 
+from pixsort.common import *
 from pixsort.pixsort import PixSorter
 
 
@@ -20,7 +20,6 @@ TAGS = (
     "msr",  # Low or medium quality video file
 )
 
-ENV = "dev" # run environment (prd or dev)
 
 # ===========================================================
 #  GLOBAL VARIABLES

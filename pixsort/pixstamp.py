@@ -3,11 +3,13 @@ import logging
 from datetime import datetime
 from enum import Enum
 
+from pixsort.common import *
+
 
 #===========================================================
 # GLOBAL VARIABLES
 #===========================================================
-logger = logging.getLogger("pixsort")
+logger = logging.getLogger(ENV)
 
 
 # ===========================================================
