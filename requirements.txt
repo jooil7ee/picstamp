@@ -1,3 +1,5 @@
 pip
+pillow
+imageio
 exifread
 PyYAML
