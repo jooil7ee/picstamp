@@ -21,9 +21,10 @@ class TS_INFO_STYLE(Enum):
     Timestamp information styles
     """
     UNKNOWN = 0         # unknown style
-    STANDARD = 1        # date and time: (YYYYMMDD, HHMMSS, MSEC)
-    EPOCH_SECS = 2      # epoch seconds: (SECONDS)
-    DATETIME_OBJ = 3    # datetime object
+    STANDARD = 1        # date and time: (yyyymmdd, HHMMSS, msec)
+    TIMESTRUCT = 2      # data and time: (yyyy, mm, dd, HH, MM, SS)
+    EPOCH_SECS = 3      # epoch seconds
+    DATETIME_OBJ = 4    # datetime object
 
 class STAMP_STYLE(Enum):
     """
@@ -84,6 +85,9 @@ class PixStamp:
                 date_s, time_s, usec_s = info
                 usec_s = (usec_s + "000000")[:6]
                 stamp.ts = datetime.strptime(f"{date_s}_{time_s}.{usec_s}", "%Y%m%d_%H%M%S.%f")
+
+            elif TS_INFO_STYLE.TIMESTRUCT == style:
+                stamp.ts = datetime(*list(map(int, info)))
 
             elif TS_INFO_STYLE.EPOCH_SECS == style:
                 if isinstance(info, list) or isinstance(info, tuple):

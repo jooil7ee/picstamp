@@ -24,8 +24,12 @@ logger = logging.getLogger(ENV)
 # Name patterns expressed as regular expressions
 NAME_PATTERNS = (
     # standard date-and-time based file name (with microseconds)
-    (re.compile("[A-Za-z_]*(\d{8})_?(\d{6})(\d{0,6})\w*\.\w+", re.IGNORECASE),
+    (re.compile("[A-Za-z_]*(\d{8})[-_]?(\d{6})(\d{0,6})\w*\.\w+", re.IGNORECASE),
      TS_INFO_STYLE.STANDARD),
+
+    # timestruct based file name (e.g. macos screenshots)
+    (re.compile("[A-Za-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
+     TS_INFO_STYLE.TIMESTRUCT),
 
     # UNIX epoch seconds
     (re.compile("(\d{10})\w*\.\w+", re.IGNORECASE), TS_INFO_STYLE.EPOCH_SECS),
@@ -105,7 +109,7 @@ class PixSorter:
          - c) if not, extract from file stat (for PNG files)
         """
         pix_type = PixTypeMapper.map(pix_path)
-        *_, pix_name = pix_path.replace("-", "_").rsplit("/")
+        *_, pix_name = pix_path.rsplit("/")
 
         # extract timestamp information to create pixstamp
         if pix_type is not PX_TYPE.UNKNOWN:
