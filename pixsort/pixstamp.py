@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import datetime
 from enum import Enum
+from datetime import datetime
 
 from pixsort.common import *
-from pixsort.pixtype import *
 
 
 #===========================================================
@@ -16,11 +15,11 @@ logger = logging.getLogger(ENV)
 # ===========================================================
 # DATA TYPES
 # ===========================================================
-class TS_INFO_STYLE(Enum):
+class TSINFO_TYPE(Enum):
     """
-    Timestamp information styles
+    Timestamp information types
     """
-    UNKNOWN = 0         # unknown style
+    UNKNOWN = 0         # unknown type
     STANDARD = 1        # date and time: (yyyymmdd, HHMMSS, msec)
     TIMESTRUCT = 2      # data and time: (yyyy, mm, dd, HH, MM, SS)
     EPOCH_SECS = 3      # epoch seconds
@@ -28,10 +27,13 @@ class TS_INFO_STYLE(Enum):
 
 class STAMP_STYLE(Enum):
     """
-    PixStamp stamp styles
+    Pix stamp styles
     """
-    STANDARD = 1        # date and time: <YYYYMMDD_HHMMSS>.<MSEC>_<SEQ>.<EXT>
-    EPOCH_SECS = 2      # epoch seconds: <SECONDS>.<MSEC>_<SEQ>.<EXT>
+    STANDARD = "%Y%m%d_%H%M%S_%f"   # date and time
+    EPOCH_SECS = "%s_%f"            # epoch seconds
+
+    def __init__(self, fmt):
+        self.fmt = fmt
 
 
 # ===========================================================
@@ -39,70 +41,54 @@ class STAMP_STYLE(Enum):
 # ===========================================================
 class PixStamp:
     """
-    Timestamp information of a media file
+    Pixstamp for the pix file
     """
-    def __init__(self):
-        """
-        Initialization
-        """
-        self.ts = datetime.fromtimestamp(0)
-        self.seq = 0
-        self.type = None
-        self.desc = ""
+    def __init__(self, fmt, stamp, desc=""):
+        self.fmt = fmt
+        self.stamp = stamp
+        self.desc = desc
 
-    def format(self, style=STAMP_STYLE.STANDARD, uppercase=False) -> str:
-        """
-        construct a pixstamp in a given style
-        """
-        formatted_stamp = ""
-
-        pix_cls = "img" if (self.type.cls is PX_CLS.IMAGE) else "mov"
-
-        if STAMP_STYLE.STANDARD == style:
-            msec_s = self.ts.strftime("%f")[:3]
-            formatted_stamp = "%s_%s_%s%03d.%s" % (pix_cls,
-                                                   self.ts.strftime("%Y%m%d_%H%M%S"),
-                                                   msec_s,
-                                                   self.seq,
-                                                   self.type.fmt)
-
-        return formatted_stamp if (not uppercase) else formatted_stamp.upper()
+    def __str__(self):
+        return f"{self.fmt}/{self.stamp}"
 
     @staticmethod
-    def new(style, info, pix_type, desc ="") -> object:
+    def new(style, tsi_type, tsi_data, pix_type, desc="") -> str:
         """
-        Make a new pixstamp with a given information
+        Create a pixstamp object with a given timstamp information
         """
+        # construct datatime object first
+        dt = None
+
         try:
-            stamp = PixStamp()
+            if TSINFO_TYPE.STANDARD == tsi_type:
+                date_s, time_s, usec_s = tsi_data
+                usec_s = (usec_s + "000")[:3]
+                dt = datetime.strptime(
+                        f"{date_s}_{time_s}.{usec_s}", "%Y%m%d_%H%M%S.%f")
 
-            # set type and description
-            stamp.type = pix_type
-            stamp.desc = desc
+            elif TSINFO_TYPE.TIMESTRUCT == tsi_type:
+                dt = datetime(*list(map(int, tsi_data)))
 
-            # construct timestamp
-            if TS_INFO_STYLE.STANDARD == style:
-                date_s, time_s, usec_s = info
-                usec_s = (usec_s + "000000")[:6]
-                stamp.ts = datetime.strptime(f"{date_s}_{time_s}.{usec_s}", "%Y%m%d_%H%M%S.%f")
-
-            elif TS_INFO_STYLE.TIMESTRUCT == style:
-                stamp.ts = datetime(*list(map(int, info)))
-
-            elif TS_INFO_STYLE.EPOCH_SECS == style:
-                if isinstance(info, list) or isinstance(info, tuple):
-                    sec_s, *_ = info
+            elif TSINFO_TYPE.EPOCH_SECS == tsi_type:
+                if isinstance(tsi_data, list) or isinstance(tsi_data, tuple):
+                    sec_s, *_ = tsi_data
                 else:
-                    sec_s = info
+                    sec_s = tsi_data
 
-                stamp.ts = datetime.fromtimestamp(int(sec_s))
+                dt = datetime.fromtimestamp(int(sec_s))
 
-            elif TS_INFO_STYLE.DATETIME_OBJ == style:
-                stamp.ts = info
+            elif TSINFO_TYPE.DATETIME_OBJ == tsi_type:
+                dt = tsi_data
+
+            else:
+                logger.error(f"Unsupported TSI type: {tsi_type}")
+
+            # create pixstamp object using the datatime object
+            if dt is not None:
+                stamp_s = "%s_%s" %(pix_type.cls, dt.strftime(style)[:-3])
+                return PixStamp(pix_type.fmt, stamp_s, desc)
 
         except ValueError:
-            logger.error(f"Wrong timestamp information: {info}")
-            stamp = None
+            logger.error(f"Invalid TSI data: {tsi_info}")
 
-
-        return stamp
+        return None

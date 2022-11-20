@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from enum import Enum
+from dataclasses import dataclass
 from PIL import Image, UnidentifiedImageError
 
 from pixsort.common import *
@@ -15,15 +16,19 @@ logger = logging.getLogger(ENV)
 # ==========================================================
 # DATA TYPES
 # ==========================================================
-# Media file classes
-class PX_CLS(Enum):
-    OTHERS = 0
-    IMAGE  = 1
-    VIDEO  = 2
+@dataclass
+class PX_CLS:
+    """
+    Pix file classes
+    """
+    IMAGE: str = "img"
+    VIDEO: str = "mov"
 
-# Media file types
 class PX_TYPE(Enum):
-    UNKNOWN = ("",  PX_CLS.OTHERS)
+    """
+    Pix file types
+    """
+    UNKNOWN = (None, None)
     JPG = ("jpg", PX_CLS.IMAGE)
     TIF = ("tif", PX_CLS.IMAGE)
     PNG = ("png", PX_CLS.IMAGE)

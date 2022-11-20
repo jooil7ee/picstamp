@@ -13,12 +13,7 @@ from pixsort.pixsort import PixSorter
 # ===========================================================
 #  SYMBOLIC CONSTANTS
 # ===========================================================
-TAGS = (
-    "img",  # High quality image file
-    "isr",  # Low or Medium quality image file
-    "mov",  # High quality video file
-    "msr",  # Low or medium quality video file
-)
+HELP = "Rename pix(image and video) files using timestamp information for sorting them. Timestamp can be extracted from: file name, exif (if present) or file stat."
 
 
 # ===========================================================
@@ -33,14 +28,15 @@ logger = None
 if __name__ == "__main__":
 
     # Parse command-line
-    parser = argparse.ArgumentParser(
-            prog="python3 main.py",
-            description="Rename media files using timestamp information for sorting them")
+    parser = argparse.ArgumentParser(prog="python3 main.py", description=HELP)
 
     parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
-            dest="arg_in_dir", help="directory path which contains media files.")
+            dest="arg_in_dir", help="directory path which contains pix files.")
     parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
-            dest="arg_out_dir", help="directory path for saving renamed media files.")
+            dest="arg_out_dir", help="directory path for saving renamed pix files.")
+    parser.add_argument('-r', '--recursive', required=False,
+            dest="arg_recursive", default=False, action="store_true",
+            help="recursively traverse sub-directories")
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
             help="use uppercase name")
@@ -65,7 +61,9 @@ if __name__ == "__main__":
 
     # Run pixsort job
     sorter = PixSorter()
-    sorter.set_options(out_dir=args.arg_out_dir, uppercase=args.arg_uppercase, apply=args.arg_apply)
+    sorter.set_options(out_dir=args.arg_out_dir, recursive=args.arg_recursive,
+                       uppercase=args.arg_uppercase, apply=args.arg_apply)
+
     sorter.run(args.arg_in_dir)
 
     sys.exit(0)
