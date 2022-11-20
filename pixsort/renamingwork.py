@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+from threading import Thread
+
+from pixsort.common import *
+
 
 # ===========================================================
 # GLOBAL VARIABLES
 # ===========================================================
-logger = logging.getLogger("pixrenamer")
+logger = logging.getLogger(ENV)
 
 
 # ===========================================================

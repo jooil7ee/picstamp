@@ -59,7 +59,7 @@ class PixSorter:
 
         # pixstamp and its group manager
         self.stamper = None
-        self.psg = None
+        self.psgmgr = None
 
     def set_options(self, **kwargs):
         """
@@ -77,7 +77,7 @@ class PixSorter:
             return
 
         # Create a stamp group manager
-        self.psg = PixStampGroupManager()
+        self.psgmgr = PixStampGroupManager()
 
         # Scan and process pix files one by one
         finder = PixFinder()
@@ -91,11 +91,11 @@ class PixSorter:
 
             if stamp is not None:
                 logger.info(f"{stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
-                self.psg.add(stamp, x)
+                self.psgmgr.add(stamp, x)
 
         # Do renaming works
-        while not self.psg.empty():
-            sg = self.psg.pop()
+        while not self.psgmgr.empty():
+            sg = self.psgmgr.pop()
             print(f" > {sg}")
 
     def __inspect(self, pix_path) -> str:

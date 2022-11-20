@@ -40,11 +40,13 @@ if __name__ == "__main__":
     parser.add_argument('-u', '--uppercase', required=False,
             dest="arg_uppercase", default=False, action="store_true",
             help="use uppercase name")
-    parser.add_argument('-a', '--apply', required=False,
-            dest="arg_apply", default=False, action="store_true",
-            help="apply changes or just show plan")
+    parser.add_argument('-a', '--apply', metavar="N", nargs="?",
+            dest="arg_apply", default=0, help="apply changes with N workers. (default: 1 worker)")
 
     args = parser.parse_args()
+
+    if args.arg_apply is None:
+        args.arg_apply = 1
 
     print(args)
 
