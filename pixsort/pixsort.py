@@ -9,8 +9,8 @@ from datetime import datetime
 from pixsort.common import *
 from pixsort.pixfinder import PixFinder
 from pixsort.pixtype import PixTypeMapper, PX_TYPE
-from pixsort.pixstamp import PixStamp, TSINFO_TYPE, STAMP_STYLE
-from pixsort.pixstampgroup import PixStampGroup, PixStampGroupManager
+from pixsort.pixstamp import PixStamp, PixStampGroup, TSINFO_TYPE, STAMP_STYLE
+from pixsort.pixwork import PixWorkerGroup
 from pixsort.renamingwork import RenamingWork
 
 
@@ -53,13 +53,12 @@ class PixSorter:
             'out_dir': None,
             'recursive': False,
             'uppercase': False,
-            'apply': False,
+            'apply': 0,
             'style': STAMP_STYLE.STANDARD
         }
 
-        # pixstamp and its group manager
-        self.stamper = None
-        self.psgmgr = None
+        # reaming workers
+        self.workers = None
 
     def set_options(self, **kwargs):
         """
@@ -76,8 +75,9 @@ class PixSorter:
             logger.error(f"Input directory does not exist: {in_dir}")
             return
 
-        # Create a stamp group manager
-        self.psgmgr = PixStampGroupManager()
+        # Create renaming workers
+        num_workers = self.options['apply'] if (self.options['apply']) else 1
+        self.workq = PixWorkQueue(set_size)
 
         # Scan and process pix files one by one
         finder = PixFinder()
@@ -91,12 +91,17 @@ class PixSorter:
 
             if stamp is not None:
                 logger.info(f"{stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
-                self.psgmgr.add(stamp, x)
+                self.workq.push(stamp, x)
 
         # Do renaming works
+        if self.options['apply']:
+            self.__process()...
+
+
         while not self.psgmgr.empty():
             sg = self.psgmgr.pop()
             print(f" > {sg}")
+
 
     def __inspect(self, pix_path) -> str:
         """

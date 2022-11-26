@@ -31,22 +31,25 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python3 main.py", description=HELP)
 
     parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
-            dest="arg_in_dir", help="directory path which contains pix files.")
+            dest="in_dir", help="directory path which contains pix files.")
+
     parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
-            dest="arg_out_dir", help="directory path for saving renamed pix files.")
-    parser.add_argument('-r', '--recursive', required=False,
-            dest="arg_recursive", default=False, action="store_true",
+            dest="out_dir", help="directory path for saving renamed pix files.")
+
+    parser.add_argument('-r', '--recursive', required=False, default=False, 
+            dest="recursive", action="store_true",
             help="recursively traverse sub-directories")
-    parser.add_argument('-u', '--uppercase', required=False,
-            dest="arg_uppercase", default=False, action="store_true",
-            help="use uppercase name")
-    parser.add_argument('-a', '--apply', metavar="N", nargs="?",
-            dest="arg_apply", default=0, help="apply changes with N workers. (default: 1 worker)")
+
+    parser.add_argument('-u', '--uppercase', required=False, default=False,
+            dest="uppercase", action="store_true", help="use uppercase name")
+
+    parser.add_argument('-w', '--workers', required=False, default=1,
+            dest="num_workers", help="number of renaming workers")
+
+    parser.add_argument('-a', '--apply', required=False, default=False,
+            dest="apply", help="launch renaming workers or just show plan")
 
     args = parser.parse_args()
-
-    if args.arg_apply is None:
-        args.arg_apply = 1
 
     print(args)
 

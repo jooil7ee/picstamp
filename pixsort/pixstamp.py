@@ -48,9 +48,6 @@ class PixStamp:
         self.stamp = stamp
         self.desc = desc
 
-    def __str__(self):
-        return f"{self.fmt}/{self.stamp}"
-
     @staticmethod
     def new(style, tsi_type, tsi_data, pix_type, desc="") -> str:
         """
@@ -92,3 +89,24 @@ class PixStamp:
             logger.error(f"Invalid TSI data: {tsi_info}")
 
         return None
+
+
+class PixStampGroup:
+    """
+    Pix stamp group
+    """
+    def __init__(self, fmt, stamp, path):
+        self.fmt = fmt
+        self.stamp = stamp
+        self.paths = []
+
+    def key(self):
+        """
+        Return stamp group key
+        """
+        return f"{self.fmt}/{self.stamp}"
+
+    def __str__(self):
+        return f"{self.fmt}/{self.stamp}: {self.paths}"
+
+
