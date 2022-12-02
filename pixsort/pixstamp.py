@@ -49,6 +49,9 @@ class PixStamp:
         self.stamp = stamp
         self.desc = desc
 
+    def __str__(self):
+        return f"{self.fmt}/{self.stamp}"
+
     @staticmethod
     def new(style, tsi_type, tsi_data, pix_type, desc="") -> str:
         """
@@ -95,16 +98,22 @@ class PixStampGroup:
     """
     Pix stamp group
     """
-    def __init__(self, fmt, stamp, path):
+    def __init__(self, fmt, stamp, path=None):
         self.fmt = fmt
         self.stamp = stamp
-        self.paths = []
+        self.paths = [path,] if path else []
 
     def key(self):
         """
         Return stamp group key
         """
         return f"{self.fmt}/{self.stamp}"
+
+    def add_path(self, path):
+        """
+        Add a new path to this group
+        """
+        self.paths.append(path)
 
     def __str__(self):
         return f"{self.fmt}/{self.stamp}: {self.paths}"

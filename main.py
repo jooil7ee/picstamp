@@ -34,10 +34,6 @@ if __name__ == "__main__":
                         dest="in_dir",
                         help="directory path which contains pix files.")
 
-    parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
-                        dest="out_dir",
-                        help="directory path for saving renamed pix files.")
-
     parser.add_argument('-r', '--recursive', required=False, default=False,
                         dest="recursive", action="store_true",
                         help="recursively traverse sub-directories")
@@ -45,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument('-u', '--uppercase', required=False, default=False,
                         dest="uppercase", action="store_true", help="use uppercase name")
 
-    parser.add_argument('-w', '--workers', required=False, default=1,
+    parser.add_argument('-w', '--workers', required=False, default=1, type=int,
                         dest="num_workers", help="number of renaming workers")
 
     parser.add_argument('-a', '--apply', required=False, default=False,
@@ -65,6 +61,7 @@ if __name__ == "__main__":
 
             logging.config.dictConfig(config)
     else:
+        logdir = os.path.abspath(".")
         logging.basicConfig(level=logging.INFO)
 
     logger = logging.getLogger(ENV)
@@ -77,7 +74,8 @@ if __name__ == "__main__":
                        uppercase=args.uppercase,
                        num_workers=args.num_workers,
                        apply=args.apply)
+    sorter.set_history(logdir)
 
-    sorter.run(args.in_dir, args.out_dir)
+    sorter.run(args.in_dir, log_dir)
 
     sys.exit(0)

@@ -56,6 +56,9 @@ class PixSorter:
             'apply': False,
         }
 
+        # history
+        self.history = None
+
         # reaming workers
         self.workers = None
 
@@ -66,7 +69,18 @@ class PixSorter:
         for (k, v) in kwargs.items():
             self.opts[k] = v
 
-    def run(self, in_dir, out_dir):
+    def set_history(self, history_dir):
+        """
+        Create a history file at given directory
+        """
+        if not os.path.exists(history_dir):
+            os.mkdir(history_dir)
+
+        history_file = f"history-%s.log" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
+
+        self.history = open(os.path.join(history_dir, history_file))
+
+    def run(self, in_dir, log_dir):
         """
         Rename pix files in a given directory
         """
@@ -81,6 +95,8 @@ class PixSorter:
         finder = PixFinder()
         finder.find(in_dir, self.opts['recursive'])
 
+        logger.info(f"Inspect pix files in {in_dir}")
+
         while not finder.empty():
             x = finder.pop()
 
@@ -88,12 +104,15 @@ class PixSorter:
             stamp = self.__inspect(x)
 
             if stamp is not None:
-                logger.info(f"{stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
+                logger.info(f" * {stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
                 self.workers.add_work(stamp, x)
 
         # Do renaming works
-        logger.info("Start workers")
-        self.workers.start(self.opts['apply'])
+        logger.info(f"Start {self.opts['num_workers']} worker(s) for renaming")
+        self.workers.start(self.opts['uppercase'], self.opts['apply'])
+
+        if self.history:
+            self.history.close()
 
         logger.info("Complete")
 
