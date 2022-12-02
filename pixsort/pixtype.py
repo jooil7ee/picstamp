@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+
 from PIL import Image, UnidentifiedImageError
 
 from pixsort.common import *
-
 
 # ===========================================================
 # GLOBAL VARIABLES

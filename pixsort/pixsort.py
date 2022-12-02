@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-import re
 import glob
 import logging
 import os.path
-import exifread
+import re
 from datetime import datetime
+
+import exifread
 
 from pixsort.common import *
 from pixsort.pixfinder import PixFinder
-from pixsort.pixtype import PixTypeMapper, PX_TYPE
-from pixsort.pixstamp import PixStamp, PixStampGroup, TSINFO_TYPE, STAMP_STYLE
+from pixsort.pixstamp import STAMP_STYLE, TSINFO_TYPE, PixStamp, PixStampGroup
+from pixsort.pixtype import PX_TYPE, PixTypeMapper
 from pixsort.pixwork import PixWorkerGroup
 from pixsort.renamingwork import RenamingWork
-
 
 # ===========================================================
 # GLOBAL VARIABLES
@@ -49,12 +49,13 @@ class PixSorter:
         """
         Initialization
         """
-        self.options = {
+        self.opts = {
+            'style': STAMP_STYLE.STANDARD,
+            'num_workers': 1,
             'out_dir': None,
             'recursive': False,
             'uppercase': False,
-            'apply': 0,
-            'style': STAMP_STYLE.STANDARD
+            'apply': False,
         }
 
         # reaming workers
@@ -65,9 +66,9 @@ class PixSorter:
         Set options: uppercase
         """
         for (k, v) in kwargs.items():
-            self.options[k] = v
+            self.opts[k] = v
 
-    def run(self, in_dir):
+    def run(self, in_dir, out_dir):
         """
         Rename pix files in a given directory
         """
@@ -76,12 +77,11 @@ class PixSorter:
             return
 
         # Create renaming workers
-        num_workers = self.options['apply'] if (self.options['apply']) else 1
-        self.workq = PixWorkQueue(set_size)
+        self.workers = PixWorkerGroup(self.opts['num_workers'])
 
         # Scan and process pix files one by one
         finder = PixFinder()
-        finder.find(in_dir, self.options['recursive'])
+        finder.find(in_dir, self.opts['recursive'])
 
         while not finder.empty():
             x = finder.pop()
@@ -91,17 +91,13 @@ class PixSorter:
 
             if stamp is not None:
                 logger.info(f"{stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
-                self.workq.push(stamp, x)
+                self.workers.add_work(stamp, x)
 
         # Do renaming works
-        if self.options['apply']:
-            self.__process()...
+        logger.info("Start workers")
+        self.workers.start(self.opts['apply']) 
 
-
-        while not self.psgmgr.empty():
-            sg = self.psgmgr.pop()
-            print(f" > {sg}")
-
+        logger.info("Complete")
 
     def __inspect(self, pix_path) -> str:
         """
@@ -115,7 +111,7 @@ class PixSorter:
 
         # extract timestamp information to create pixstamp
         if pix_type is not PX_TYPE.UNKNOWN:
-            style = self.options['style'].fmt
+            style = self.opts['style'].fmt
 
             # rule1: match with file name patterns
             for p, tsi_type in NAME_PATTERNS:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
 import glob
+import os
 from collections import deque
 
 from pixsort.common import *

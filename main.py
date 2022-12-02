@@ -6,7 +6,7 @@ import os.path
 import sys
 import yaml
 
-from pixsort.common import *
+from pixsort.common import ENV
 from pixsort.pixsort import PixSorter
 
 
@@ -31,12 +31,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python3 main.py", description=HELP)
 
     parser.add_argument('-i', '--in', metavar="IN_DIR", required=True,
-            dest="in_dir", help="directory path which contains pix files.")
+                        dest="in_dir",
+                        help="directory path which contains pix files.")
 
     parser.add_argument('-o', '--out', metavar="OUT_DIR", nargs="?", default="done",
-            dest="out_dir", help="directory path for saving renamed pix files.")
+                        dest="out_dir",
+                        help="directory path for saving renamed pix files.")
 
-    parser.add_argument('-r', '--recursive', required=False, default=False, 
+    parser.add_argument('-r', '--recursive', required=False, default=False,
             dest="recursive", action="store_true",
             help="recursively traverse sub-directories")
 
@@ -51,8 +53,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(args)
-
     # Set logger
     if os.path.exists("resources/logging.conf"):
         with open("resources/logging.conf", "r") as f:
@@ -62,13 +62,17 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.INFO)
 
     logger = logging.getLogger(ENV)
+    logger.info(args)
     logger.info("<< Start Pixsort >>")
 
     # Run pixsort job
     sorter = PixSorter()
-    sorter.set_options(out_dir=args.arg_out_dir, recursive=args.arg_recursive,
-                       uppercase=args.arg_uppercase, apply=args.arg_apply)
+    sorter.set_options(
+            recursive=args.recursive,
+            uppercase=args.uppercase,
+            num_workers=args.num_workers,
+            apply=args.apply)
 
-    sorter.run(args.arg_in_dir)
+    sorter.run(args.in_dir, args.out_dir)
 
     sys.exit(0)

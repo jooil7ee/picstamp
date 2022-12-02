@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
 from pixsort.common import *
-
 
 #===========================================================
 # GLOBAL VARIABLES
