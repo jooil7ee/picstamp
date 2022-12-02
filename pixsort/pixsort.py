@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-import glob
+import re
 import logging
 import os.path
-import re
+import exifread
 from datetime import datetime
 
-import exifread
-
-from pixsort.common import *
+from pixsort.common import ENV
 from pixsort.pixfinder import PixFinder
-from pixsort.pixstamp import STAMP_STYLE, TSINFO_TYPE, PixStamp, PixStampGroup
 from pixsort.pixtype import PX_TYPE, PixTypeMapper
 from pixsort.pixwork import PixWorkerGroup
-from pixsort.renamingwork import RenamingWork
+from pixsort.pixstamp import STAMP_STYLE, TSINFO_TYPE, PixStamp
+
 
 # ===========================================================
 # GLOBAL VARIABLES
@@ -26,15 +24,15 @@ logger = logging.getLogger(ENV)
 # Name patterns expressed as regular expressions
 NAME_PATTERNS = (
     # standard date-and-time based file name (with microseconds)
-    (re.compile("[A-Za-z_]*(\d{8})[-_]?(\d{6})(\d{0,3})\w*\.\w+", re.IGNORECASE),
+    (re.compile(r"[A-Za-z_]*(\d{8})[-_]?(\d{6})(\d{0,3})\w*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.STANDARD),
 
     # timestruct based file name (e.g. macos screenshots)
-    (re.compile("[A-Za-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
+    (re.compile(r"[A-Za-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.TIMESTRUCT),
 
     # UNIX epoch seconds
-    (re.compile("(\d{10})\w*\.\w+", re.IGNORECASE), TSINFO_TYPE.EPOCH_SECS),
+    (re.compile(r"(\d{10})\w*\.\w+", re.IGNORECASE), TSINFO_TYPE.EPOCH_SECS),
 )
 
 
@@ -95,7 +93,7 @@ class PixSorter:
 
         # Do renaming works
         logger.info("Start workers")
-        self.workers.start(self.opts['apply']) 
+        self.workers.start(self.opts['apply'])
 
         logger.info("Complete")
 

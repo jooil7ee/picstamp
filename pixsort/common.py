@@ -4,4 +4,4 @@
 # SYMBOLIC CONSTANTS
 # ==========================================================
 # run environment (prd or dev)
-ENV = "dev" 
+ENV = "dev"

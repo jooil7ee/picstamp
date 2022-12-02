@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
-import logging
-from collections import deque
 from threading import Thread
+from collections import deque
 
-from pixsort.common import *
 from pixsort.pixstamp import PixStampGroup
-
-
-# ===========================================================
-# GLOBAL VARIABLES
-# ===========================================================
-logger = logging.getLogger(ENV)
 
 
 # ===========================================================
@@ -108,9 +100,8 @@ class PixWorkerGroup:
         workers = []
 
         for i in range(self.num_workers):
-            worker = Thread(
-                    target=PixWorkerGroup.__process,
-                    args=(i, self.workq[i], apply))
+            worker = Thread(target=PixWorkerGroup.__process,
+                            args=(i, self.workq[i], apply))
 
             workers.append(worker)
             worker.start()

@@ -3,8 +3,6 @@ import glob
 import os
 from collections import deque
 
-from pixsort.common import *
-
 
 # ==========================================================
 # CLASS IMPLEMETATIONS
@@ -47,7 +45,7 @@ class PixFinder:
 
         for x in files:
             if os.path.isdir(x):
-                if recursive: 
+                if recursive:
                     self.__find_subdir(x)
             else:
                 self.files.append(x)

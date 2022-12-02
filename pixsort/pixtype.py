@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
-from dataclasses import dataclass
 from enum import Enum
-
+from dataclasses import dataclass
 from PIL import Image, UnidentifiedImageError
 
-from pixsort.common import *
+from pixsort.common import ENV
+
 
 # ===========================================================
 # GLOBAL VARIABLES
@@ -23,6 +23,7 @@ class PX_CLS:
     """
     IMAGE: str = "img"
     VIDEO: str = "mov"
+
 
 class PX_TYPE(Enum):
     """
@@ -48,14 +49,14 @@ class PixTypeMapper:
     Media type mapper. It maps file extensions to type objects
     """
     type_map = {
-        "jpg":  PX_TYPE.JPG,
+        "jpg": PX_TYPE.JPG,
         "jpeg": PX_TYPE.JPG,
-        "mpo":  PX_TYPE.JPG,
-        "tif":  PX_TYPE.TIF,
+        "mpo": PX_TYPE.JPG,
+        "tif": PX_TYPE.TIF,
         "tiff": PX_TYPE.TIF,
-        "png":  PX_TYPE.PNG,
-        "mp4":  PX_TYPE.MP4,
-        "mov":  PX_TYPE.MOV,
+        "png": PX_TYPE.PNG,
+        "mp4": PX_TYPE.MP4,
+        "mov": PX_TYPE.MOV,
     }
 
     def __new__(cls, *args, **kwargs):
@@ -69,7 +70,7 @@ class PixTypeMapper:
         try:
             fmt = Image.open(pix_path).format.lower()
 
-        except UnidentifiedImageError: 
+        except UnidentifiedImageError:
             *_, fmt = pix_path.lower().split(".")
 
         except FileNotFoundError:

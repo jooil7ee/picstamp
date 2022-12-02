@@ -2,6 +2,5 @@ pip
 flake8
 wheel
 pillow
-imageio
 exifread
 PyYAML
