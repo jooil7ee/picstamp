@@ -54,15 +54,18 @@ if __name__ == "__main__":
         with open("resources/logging.conf", "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
-            # create log directory if not exists
-            logdir = os.path.split(config['handlers']['logfile']['filename'])[0]
-            if not os.path.exists(logdir):
-                os.mkdir(logdir)
+            try:
+                # create log directory if not exists
+                log_dir = os.path.split(config['handlers']['logfile']['filename'])[0]
+                if not os.path.exists(log_dir):
+                    os.mkdir(log_dir)
+            except:
+                log_dir = os.path.abspath(".")
 
             logging.config.dictConfig(config)
     else:
-        logdir = os.path.abspath(".")
         logging.basicConfig(level=logging.INFO)
+        log_dir = os.path.abspath(".")
 
     logger = logging.getLogger(ENV)
     logger.info(args)
@@ -73,9 +76,9 @@ if __name__ == "__main__":
     sorter.set_options(recursive=args.recursive,
                        uppercase=args.uppercase,
                        num_workers=args.num_workers,
+                       history_dir=log_dir,
                        apply=args.apply)
-    sorter.set_history(logdir)
 
-    sorter.run(args.in_dir, log_dir)
+    sorter.run(args.in_dir)
 
     sys.exit(0)

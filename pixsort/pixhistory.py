@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import time
 import logging
 import os.path
-from threading import Lock
+from threading import Lock as WriteLock
 
 from pixsort.common import ENV
 
@@ -9,7 +10,7 @@ from pixsort.common import ENV
 # ===========================================================
 # GLOBAL VARIABLES
 # ===========================================================
-logger = logger.getLogger(ENV)
+logger = logging.getLogger(ENV)
 
 
 # ===========================================================
@@ -34,10 +35,10 @@ class PixHistory:
             self.history = open(os.path.join(history_dir, history_file), "w") 
         except:
             logger.error(f"Cannot create a history file at {history_dir}")
-            self.history = open(history_filem "w")
+            self.history = open(history_file, "w")
 
         # create a lock for writing
-        self.lock = Threading.Lock()
+        self.lock = WriteLock()
 
     def close(self):
         """
@@ -51,17 +52,17 @@ class PixHistory:
 
         self.lock.release()
 
-    def write(self, line):
+    def writeline(self, line):
         """
         Write an history line
         """
         if self.history:
-            lock.acquire()
+            self.lock.acquire()
             try:
                 # write a history line
-                self.history.write(history_line) 
+                self.history.write(f"{line}\n") 
 
             except:
                 logger.error("Cannot write a history line")
 
-            lock.release()
+            self.lock.release()

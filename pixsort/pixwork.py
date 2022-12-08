@@ -4,6 +4,7 @@ from threading import Thread, Lock
 from collections import deque
 
 from pixsort.pixstamp import PixStampGroup
+from pixsort.pixhistory import PixHistory
 
 
 # ===========================================================
@@ -24,6 +25,12 @@ class PixWorkQueue:
             self.index = index
         else:
             self.index = {}
+
+    def __del__(self):
+        """
+        Clean-up
+        """
+        self.queue.clear()
 
     def empty(self):
         """
@@ -79,22 +86,9 @@ class PixWorkerGroup:
 
     def enable_history(self, history_dir):
         """
-        Enable work history. Create a history file at the given directory.
+        Enable work history
         """
-        if not os.path.exists(history_dir):
-            os.mkdir(history_dir)
-
-        history_file = f"history-%s.log" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
-
-        # create a history file
-        try:
-            self.history = open(os.path.join(history_dir, history_file), "w") 
-        except:
-            logger.error(f"Cannot create a history file at {history_dir}")
-            self.history = open(history_filem "w")
-
-        # create a lock for writing
-        self.lock = Threading.Lock()
+        self.history = PixHistory(history_dir)
 
     def close_history(self):
         """
@@ -102,22 +96,6 @@ class PixWorkerGroup:
         """
         if self.history:
             self.history.close()
-
-    def write_history(self, history_line):
-        """
-        Write an history line
-        """
-        if self.history:
-            lock.acquire()
-
-            try:
-                # write a history line
-                self.history.write(history_line) 
-
-            except:
-                logger.error("Cannot write a history line")
-
-            lock.release()
 
     def add_work(self, pixstamp, path) -> object:
         """
@@ -137,13 +115,6 @@ class PixWorkerGroup:
 
         return psg
 
-    def write_history(self):
-        """
-        Write work history line.
-        """
-        
-
-
     def start(self, uppercase, apply=False):
         """
         Start renaming workers. Each worker processes its own work queue.
@@ -152,16 +123,17 @@ class PixWorkerGroup:
 
         for i in range(self.num_workers):
             worker = Thread(target=PixWorkerGroup.__process,
-                            args=(i, self.workq[i], uppercase, apply))
-
+                            args=(i, self.workq[i], self.history, uppercase, apply))
             workers.append(worker)
+
+            # start a worker as thread
             worker.start()
 
         for worker in workers:
             worker.join()
 
     @staticmethod
-    def __process(tid, queue, uppercase, apply):
+    def __process(tid, queue, history, uppercase, apply):
         """
         Do renaming works
         """
@@ -182,4 +154,6 @@ class PixWorkerGroup:
                 if apply:
                     # do the renaming work
                    pass
+
+                history.writeline(f"mv \"{path}\" \"{base}/{y}\"")
 
