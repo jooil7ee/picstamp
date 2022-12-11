@@ -8,6 +8,22 @@ from pixsort.common import ENV
 
 
 # ===========================================================
+# SYMBOLIC CONSTANTS
+# ===========================================================
+HEADER = """
+#!/bin/bash
+
+if [[ "$#" == 1 && "$1" == "do" ]]; then
+  function _work() { echo "mv -fv $1 $2"; }
+elif [[ "$#" == 1 && "$1" == "undo" ]]; then
+  function _work() { echo "mv -fv $2 $1"; }
+else
+  echo "Usage: $0 {do|undo}"; exit 0
+fi
+
+"""
+
+# ===========================================================
 # GLOBAL VARIABLES
 # ===========================================================
 logger = logging.getLogger(ENV)
@@ -39,6 +55,8 @@ class PixHistory:
 
         # create a lock for writing
         self.lock = WriteLock()
+
+        logger.info(f"Start to write history logs to {history_file}")
 
     def close(self):
         """
