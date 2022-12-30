@@ -84,7 +84,7 @@ class PixWorkerGroup:
         for i in range(self.num_workers):
             self.workq.append(PixWorkQueue(index=self.index))
 
-    def enable_history(self, history_dir):
+    def open_history(self, history_dir="."):
         """
         Enable work history
         """
@@ -141,19 +141,19 @@ class PixWorkerGroup:
             psg = queue.pop()
             seq = 0
 
-            for path in psg.paths:
-                base, x = os.path.split(path)
-                y = "%s%03d.%s" % (psg.stamp, seq, psg.fmt)
+            for from_path in psg.paths:
+                base, x = os.path.split(from_path)
+                y = f"%s%03d.%s" % (psg.stamp, seq, psg.fmt)
                 seq += 1
 
                 if uppercase:
                     y = y.upper()
 
-                print(f" * [W{tid}] {psg.key()}:  {y} <-- {x}  (@{base})")
+                to_path = os.path.join(base, y)
 
                 if apply:
                     # do the renaming work
-                   pass
+                   os.rename(from_path, to_path)
 
-                history.writeline(f"mv \"{path}\" \"{base}/{y}\"")
+                history.writeline(from_path, to_path)
 

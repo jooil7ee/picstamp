@@ -10,13 +10,12 @@ from pixsort.common import ENV
 # ===========================================================
 # SYMBOLIC CONSTANTS
 # ===========================================================
-HEADER = """
-#!/bin/bash
+HEADER = """#!/bin/bash
 
 if [[ "$#" == 1 && "$1" == "do" ]]; then
-  function _work() { echo "mv -fv $1 $2"; }
+  pixwork() { mv -fv "$1" "$2"; }
 elif [[ "$#" == 1 && "$1" == "undo" ]]; then
-  function _work() { echo "mv -fv $2 $1"; }
+  pixwork() { mv -fv "$2" "$1"; }
 else
   echo "Usage: $0 {do|undo}"; exit 0
 fi
@@ -44,7 +43,7 @@ class PixHistory:
         if not os.path.exists(history_dir):
             os.mkdir(history_dir)
 
-        history_file = f"history-%s.log" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
+        history_file = f"history-%s.sh" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
         # create a history file
         try:
@@ -52,6 +51,9 @@ class PixHistory:
         except:
             logger.error(f"Cannot create a history file at {history_dir}")
             self.history = open(history_file, "w")
+
+        # write header
+        self.history.write(HEADER)
 
         # create a lock for writing
         self.lock = WriteLock()
@@ -70,7 +72,7 @@ class PixHistory:
 
         self.lock.release()
 
-    def writeline(self, line):
+    def writeline(self, from_path, to_path):
         """
         Write an history line
         """
@@ -78,7 +80,7 @@ class PixHistory:
             self.lock.acquire()
             try:
                 # write a history line
-                self.history.write(f"{line}\n") 
+                self.history.write(f"pixwork '{from_path}' '{to_path}'\n") 
 
             except:
                 logger.error("Cannot write a history line")

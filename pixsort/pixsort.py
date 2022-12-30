@@ -52,7 +52,6 @@ class PixSorter:
             'num_workers': 1,
             'recursive': False,
             'uppercase': False,
-            'history_dir': None,
             'apply': False,
         }
 
@@ -76,7 +75,7 @@ class PixSorter:
 
         # Create renaming workers
         self.workers = PixWorkerGroup(self.opts['num_workers'])
-        self.workers.enable_history(self.opts['history_dir'])
+        self.workers.open_history()
 
         # Scan and process pix files one by one
         finder = PixFinder()

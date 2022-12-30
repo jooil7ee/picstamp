@@ -45,7 +45,8 @@ if __name__ == "__main__":
                         dest="num_workers", help="number of renaming workers")
 
     parser.add_argument('-a', '--apply', required=False, default=False,
-                        dest="apply", help="launch renaming workers or just show plan")
+                        dest="apply", action="store_true",
+                        help="launch renaming workers or just show plan")
 
     args = parser.parse_args()
 
@@ -54,18 +55,15 @@ if __name__ == "__main__":
         with open("resources/logging.conf", "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
-            try:
-                # create log directory if not exists
-                log_dir = os.path.split(config['handlers']['logfile']['filename'])[0]
-                if not os.path.exists(log_dir):
-                    os.mkdir(log_dir)
-            except:
-                log_dir = os.path.abspath(".")
+            # create log directory if not exists
+            log_dir = os.path.split(config['handlers']['logfile']['filename'])[0]
+
+            if not os.path.exists(log_dir):
+                os.mkdir(log_dir)
 
             logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=logging.INFO)
-        log_dir = os.path.abspath(".")
 
     logger = logging.getLogger(ENV)
     logger.info(args)
@@ -76,7 +74,6 @@ if __name__ == "__main__":
     sorter.set_options(recursive=args.recursive,
                        uppercase=args.uppercase,
                        num_workers=args.num_workers,
-                       history_dir=log_dir,
                        apply=args.apply)
 
     sorter.run(args.in_dir)
