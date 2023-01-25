@@ -1,0 +1,15 @@
+name: master workflow
+on:
+  push:
+    branches: [master]
+    paths: "**.py"
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: check source code
+      uses: actions/checkout@v3
+
+    - name: using flake
+      uses: py-actions/flake8@v2
