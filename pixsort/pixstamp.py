@@ -115,5 +115,11 @@ class PixStampGroup:
         """
         self.paths.append(path)
 
+    def sort_paths(self):
+        """
+        Sort paths in the list
+        """
+        self.paths.sort()
+
     def __str__(self):
         return f"{self.fmt}/{self.stamp}: {self.paths}"

@@ -139,6 +139,7 @@ class PixWorkerGroup:
         """
         while not queue.empty():
             psg = queue.pop()
+            psg.sort_paths()
             seq = 0
 
             for from_path in psg.paths:
