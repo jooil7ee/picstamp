@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
-from threading import Thread, Lock
+from threading import Thread
 from collections import deque
 
 from pixsort.pixstamp import PixStampGroup
@@ -144,7 +144,7 @@ class PixWorkerGroup:
 
             for from_path in psg.paths:
                 base, x = os.path.split(from_path)
-                y = f"%s%03d.%s" % (psg.stamp, seq, psg.fmt)
+                y = "%s%03d.%s" % (psg.stamp, seq, psg.fmt)
                 seq += 1
 
                 if uppercase:
@@ -154,7 +154,6 @@ class PixWorkerGroup:
 
                 if apply:
                     # do the renaming work
-                   os.rename(from_path, to_path)
+                    os.rename(from_path, to_path)
 
                 history.writeline(from_path, to_path)
-

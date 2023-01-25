@@ -43,12 +43,12 @@ class PixHistory:
         if not os.path.exists(history_dir):
             os.mkdir(history_dir)
 
-        history_file = f"history-%s.sh" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
+        history_file = "history-%s.sh" % time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
         # create a history file
         try:
-            self.history = open(os.path.join(history_dir, history_file), "w") 
-        except:
+            self.history = open(os.path.join(history_dir, history_file), "w")
+        except Exception:
             logger.error(f"Cannot create a history file at {history_dir}")
             self.history = open(history_file, "w")
 
@@ -80,9 +80,9 @@ class PixHistory:
             self.lock.acquire()
             try:
                 # write a history line
-                self.history.write(f"pixwork '{from_path}' '{to_path}'\n") 
+                self.history.write(f"pixwork '{from_path}' '{to_path}'\n")
 
-            except:
+            except Exception:
                 logger.error("Cannot write a history line")
 
             self.lock.release()
