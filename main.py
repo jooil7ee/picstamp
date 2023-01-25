@@ -39,7 +39,7 @@ if __name__ == "__main__":
                         help="recursively traverse sub-directories")
 
     parser.add_argument('-u', '--uppercase', required=False, default=False,
-                        dest="uppercase", action="store_true", help="to uppercase name")
+                        dest="uppercase", action="store_true", help="use uppercase name")
 
     parser.add_argument('-w', '--workers', required=False, default=1, type=int,
                         dest="num_workers", help="number of renaming workers")
