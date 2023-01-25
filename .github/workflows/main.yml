@@ -5,11 +5,19 @@ on:
     paths: "**.py"
 
 jobs:
-  syntax-check:
+  flake8-lint:
     runs-on: ubuntu-latest
+    name: Lint
     steps:
-    - name: check source code
-      uses: actions/checkout@v3
-
-    - name: using flake
-      uses: py-actions/flake8@v2
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Lint with flake8
+        uses: py-actions/flake8@v2
+        with:
+          ignore: "E203,E501"
+          exclude: "Makefile,resources"
+          max-line-length: "100"
