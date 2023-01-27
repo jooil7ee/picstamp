@@ -21,14 +21,18 @@ logger = logging.getLogger(ENV)
 # ===========================================================
 # SYMBOLIC CONSTANTS
 # ===========================================================
-# Name patterns expressed as regular expressions
+# File name patterns expressed as regular expressions
 NAME_PATTERNS = (
-    # standard date-and-time based file name (with microseconds)
-    (re.compile(r"[A-Za-z_]*(\d{8})[-_]?(\d{6})(\d{0,3})\w*\.\w+", re.IGNORECASE),
+    # standard stamp style
+    (re.compile(r"^(?:img|mov)_(\d{8})_(\d{6})_(\d{3,6})\.\w+", re.IGNORECASE),
+     TSINFO_TYPE.STANDARD),
+
+    # date-and-time based file name (with microseconds)
+    (re.compile(r"[a-z_]*(\d{8})[-_]?(\d{6})[-_]?(\d{0,3})\w*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.STANDARD),
 
     # timestruct based file name (e.g. macos screenshots)
-    (re.compile(r"[A-Za-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
+    (re.compile(r"[a-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.TIMESTRUCT),
 
     # UNIX epoch seconds

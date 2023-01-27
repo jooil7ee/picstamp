@@ -30,7 +30,7 @@ class STAMP_STYLE(Enum):
     """
     Pix stamp styles
     """
-    STANDARD = "%Y%m%d_%H%M%S_%f"   # date and time
+    STANDARD = "%Y%m%d_%H%M%S_%f"   # date and time with class
     EPOCH_SECS = "%s_%f"            # epoch seconds
 
     def __init__(self, fmt):
