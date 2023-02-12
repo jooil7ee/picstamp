@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 import os.path
+import logging
 from threading import Thread
 from collections import deque
 
+from pixsort.common import ENV
 from pixsort.pixstamp import PixStampGroup
 from pixsort.pixhistory import PixHistory
+
+
+# ===========================================================
+# GLOBAL VARIABLES
+# ===========================================================
+logger = logging.getLogger(ENV)
 
 
 # ===========================================================
@@ -84,19 +92,6 @@ class PixWorkerGroup:
         for i in range(self.num_workers):
             self.workq.append(PixWorkQueue(index=self.index))
 
-    def open_history(self, history_dir="."):
-        """
-        Enable work history
-        """
-        self.history = PixHistory(history_dir)
-
-    def close_history(self):
-        """
-        Close the history file
-        """
-        if self.history:
-            self.history.close()
-
     def add_work(self, pixstamp, path) -> object:
         """
         Create a renaming work for a given pixstamp. If duplicated, they are merged.
@@ -119,11 +114,20 @@ class PixWorkerGroup:
         """
         Start renaming workers. Each worker processes its own work queue.
         """
+        # set operation mode
+        if apply:
+            logger.info(f"Start {self.num_workers} worker(s) in apply mode with history logging")
+            target = PixWorkerGroup.__process
+            self.history = PixHistory(".")
+        else:
+            logger.info(f"Start {self.num_workers} worker(s) in preview mode")
+            target = PixWorkerGroup.__preview
+
+        # create wrokers
         workers = []
 
         for i in range(self.num_workers):
-            worker = Thread(target=PixWorkerGroup.__process,
-                            args=(i, self.workq[i], self.history, uppercase, apply))
+            worker = Thread(target=target, args=(i, self.workq[i], self.history, uppercase))
             workers.append(worker)
 
             # start a worker as thread
@@ -132,8 +136,15 @@ class PixWorkerGroup:
         for worker in workers:
             worker.join()
 
+    def close(self):
+        """
+        Clean up resources
+        """
+        if self.history:
+            self.history.close()
+
     @staticmethod
-    def __process(tid, queue, history, uppercase, apply):
+    def __process(tid, queue, history, uppercase):
         """
         Do renaming works
         """
@@ -150,10 +161,38 @@ class PixWorkerGroup:
                 if uppercase:
                     y = y.upper()
 
-                to_path = os.path.join(base, y)
+                # compare old(x) and new(y) file names
+                if x == y:
+                    logger.info(" [X] %-30s <-- %s (@%s)" % ("---", x, base))
+                else:
+                    # rename pix file and write history
+                    logger.info(f" [A] {y} <-- {x} (@{base})")
 
-                if apply:
-                    # do the renaming work
+                    to_path = os.path.join(base, y)
                     os.rename(from_path, to_path)
 
-                history.writeline(from_path, to_path)
+                    history.writeline(from_path, to_path)
+
+    @staticmethod
+    def __preview(tid, queue, history, uppercase):
+        """
+        Preview renaming works. (not applied)
+        """
+        while not queue.empty():
+            psg = queue.pop()
+            psg.sort_paths()
+            seq = 0
+
+            for from_path in psg.paths:
+                base, x = os.path.split(from_path)
+                y = "%s%03d.%s" % (psg.stamp, seq, psg.fmt)
+                seq += 1
+
+                if uppercase:
+                    y = y.upper()
+
+                # compare old(x) and new(y) file names
+                if x == y:
+                    logger.info(" [X] %-30s <-- %s (@%s)" % ("---", x, base))
+                else:
+                    logger.info(f" [P] {y} <-- {x} (@{base})")

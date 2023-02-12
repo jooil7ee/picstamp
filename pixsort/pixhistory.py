@@ -36,7 +36,7 @@ class PixHistory:
     Renaming work history writer
     """
 
-    def __init__(self, history_dir):
+    def __init__(self, history_dir="."):
         """
         Initialization
         """

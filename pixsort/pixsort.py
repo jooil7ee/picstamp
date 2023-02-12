@@ -79,7 +79,6 @@ class PixSorter:
 
         # Create renaming workers
         self.workers = PixWorkerGroup(self.opts['num_workers'])
-        self.workers.open_history()
 
         # Scan and process pix files one by one
         finder = PixFinder()
@@ -97,12 +96,11 @@ class PixSorter:
                 logger.info(f" * {stamp} ({stamp.desc}) <-- {os.path.split(x)[-1]}")
                 self.workers.add_work(stamp, x)
 
-        # Do renaming works
-        logger.info(f"Start {self.opts['num_workers']} worker(s) for renaming")
+        # Start renaming works
         self.workers.start(self.opts['uppercase'], self.opts['apply'])
 
-        # close history
-        self.workers.close_history()
+        # clean up
+        self.workers.close()
 
         logger.info("Complete")
 
