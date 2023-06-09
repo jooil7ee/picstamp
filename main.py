@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import argparse
-import logging.config
-import os.path
 import sys
 import yaml
+import argparse
+import os.path
+import logging.config
 
 from app.common import ENV
 from app.pixsort import PixSorter
