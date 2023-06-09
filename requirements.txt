@@ -1,6 +1,0 @@
-pip
-flake8
-wheel
-pillow
-exifread
-PyYAML

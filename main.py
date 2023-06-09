@@ -6,14 +6,15 @@ import os.path
 import sys
 import yaml
 
-from pixsort.common import ENV
-from pixsort.pixsort import PixSorter
+from app.common import ENV
+from app.pixsort import PixSorter
 
 
 # ===========================================================
 #  SYMBOLIC CONSTANTS
 # ===========================================================
-HELP = "Rename pix(image and video) files using timestamp information for sorting them. Timestamp can be extracted from: file name, exif (if present) or file stat."
+HELP = "Rename pix(image and video) files using timestamp information for sorting them. \
+Timestamp can be extracted from: file name, exif (if present) or file stat."
 
 
 # ===========================================================

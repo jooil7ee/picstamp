@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass
 from PIL import Image, UnidentifiedImageError
 
-from pixsort.common import ENV
+from app.common import ENV
 
 
 # ===========================================================

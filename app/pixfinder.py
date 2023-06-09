@@ -60,6 +60,6 @@ class PixFinder:
         for x in files:
             if os.path.isdir(x):
                 self.__find_subdir(x)
-
-            self.files.append(x)
-            self.size += 1
+            else:
+                self.files.append(x)
+                self.size += 1

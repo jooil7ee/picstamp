@@ -5,11 +5,11 @@ import os.path
 import exifread
 from datetime import datetime
 
-from pixsort.common import ENV
-from pixsort.pixfinder import PixFinder
-from pixsort.pixtype import PX_TYPE, PixTypeMapper
-from pixsort.pixwork import PixWorkerGroup
-from pixsort.pixstamp import STAMP_STYLE, TSINFO_TYPE, PixStamp
+from app.common import ENV
+from app.pixfinder import PixFinder
+from app.pixtype import PX_TYPE, PixTypeMapper
+from app.pixwork import PixWorkerGroup
+from app.pixstamp import STAMP_STYLE, TSINFO_TYPE, PixStamp
 
 
 # ===========================================================

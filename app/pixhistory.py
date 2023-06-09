@@ -4,7 +4,7 @@ import logging
 import os.path
 from threading import Lock as WriteLock
 
-from pixsort.common import ENV
+from app.common import ENV
 
 
 # ===========================================================

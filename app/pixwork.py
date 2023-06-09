@@ -4,9 +4,9 @@ import logging
 from threading import Thread
 from collections import deque
 
-from pixsort.common import ENV
-from pixsort.pixstamp import PixStampGroup
-from pixsort.pixhistory import PixHistory
+from app.common import ENV
+from app.pixstamp import PixStampGroup
+from app.pixhistory import PixHistory
 
 
 # ===========================================================

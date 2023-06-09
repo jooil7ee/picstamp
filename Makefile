@@ -1,13 +1,21 @@
+# ----------------------------------------------------------
+# ENV VARS
+# ----------------------------------------------------------
+BASEDIR := $(shell pwd)
 SHELL := /bin/bash
-FLAKE8_CONFIG := ./flake8.cfg
 
-# Actions
+# Linter
+FLAKE8_CFG := $(BASEDIR)/flake8.cfg
+
+# ----------------------------------------------------------
+# ACTIONS
+# ----------------------------------------------------------
+# For application running and testing
 env:
-	@env python3 -m venv venv
-	@source venv/bin/activate && env python3 -m pip install -U -r requirements.txt && deactivate
+	@/usr/bin/env pipenv install
 
 lint:
-	@flake8 --config $(FLAKE8_CONFIG) .
+	@/usr/bin/env pipenv run flake8 --config $(FLAKE8_CFG) .
 
-clean:
-	@rm -rf venv
+run: lint
+	@cd src && /usr/bin/env pipenv run python main.py
