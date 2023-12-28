@@ -31,6 +31,9 @@ NAME_PATTERNS = (
     (re.compile(r"[a-z_]*(\d{8})[-_]?(\d{6})[-_]?(\d{0,3})\w*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.STANDARD),
 
+    (re.compile(r"[a-z_]*(\d{8})[-_]?(\d{6})[-_]?(\d{0,3})\W+.*\.\w+", re.IGNORECASE),
+     TSINFO_TYPE.STANDARD),
+
     # timestruct based file name (e.g. macos screenshots)
     (re.compile(r"[a-z_]*(\d{4})-?(\d{2})-?(\d{2})[ \w]*(\d{1,2})\.(\d{2})\.(\d{2}).*\.\w+", re.IGNORECASE),
      TSINFO_TYPE.TIMESTRUCT),

@@ -193,6 +193,12 @@ class PixWorkerGroup:
 
                 # compare old(x) and new(y) file names
                 if x == y:
-                    logger.info(" [X] %-30s <-- %s (@%s)" % ("---", x, base))
+                    if ENV == "prd":
+                        logger.info(" [X] %-30s <-- %s (@%s)" % ("---", x, base))
+                    else:
+                        print(" [X] %-30s <-- %s (@%s)" % ("---", x, base))
                 else:
-                    logger.info(f" [P] {y} <-- {x} (@{base})")
+                    if ENV == "prd":
+                        logger.info(f" [P] {y} <-- {x} (@{base})")
+                    else:
+                        print(f" [P] {y} <-- {x} (@{base})")
